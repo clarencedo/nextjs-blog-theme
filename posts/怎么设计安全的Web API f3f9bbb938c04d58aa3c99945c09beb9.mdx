@@ -1,0 +1,26 @@
+---
+title: 怎么设计安全的Web API
+description: "聊一聊两种Web API鉴权方式"
+date: Sep 8 2023
+---
+# 怎么设计安全的Web API
+
+![des](https://bucket01.blob.core.windows.net/container01/api-security.png)
+### Token based
+
+1. The user enters their password into the client, and the client sends the password to the Authentication Server.
+2. the Authentication Server authenticates the credentials and generates a token with an expiry time
+3. now the client can send requests to access server resources with the token in the HTTP header.This access is valid until the token expires.
+
+### HMAC based (Hash Message Authentication Code)
+
+This mechanism generates a Message Authentication Code(signature) by using a hash function(SHA256 or MD5)
+
+1. the server generates two keys, one is Public APP ID(public key) and the other one is API Key(private key)
+2. we now generate a HMAC signature on the client side(hmac A). This signature is generated with a set of attributes listed in the diagram.
+3. the client sends requests to access server resources with hmac A in the HTTP header.
+4. the server receives the request which contains the request data and the authentication header. It extracts the necessary attributes from the request and uses the API key that’s stored on the server side to generate a signature(hmac B.)
+5. the server compares hmac A (generated on the client side) and hmac B(generated on the server side). If they are matched, the requested resource will be returned to the client.
+
+*Question - How does HMAC authentication ensure data integrity? Why*
+*do we include “request timestamp” in HMAC signature generation?*
